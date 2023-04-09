@@ -1,25 +1,70 @@
-import { ChangeEvent, ChangeEventHandler } from 'react'
+import {
+  ChangeEvent,
+  ChangeEventHandler,
+  MouseEvent,
+  MouseEventHandler,
+  useEffect,
+  useState,
+} from 'react'
 import Head from 'next/head'
 import Header from '@component/components/Header'
 import Button from '@component/components/Button'
 import Select from '@component/components/Select'
 import styles from '@component/styles/Home.module.css'
 import Grid from '@component/components/News/Grid'
-import { items } from '@component/constants'
-
-const selectOptions = [
-  { value: 'angular', name: 'Angular', icon: '/icons/angular.png' },
-  { value: 'reactjs', name: 'React', icon: '/icons/react.png' },
-  { value: 'vuejs', name: 'Vuejs', icon: '/icons/vue.png' },
-]
-
-const handleChange: ChangeEventHandler = (
-  event: ChangeEvent<HTMLInputElement>
-) => {
-  console.log(event.target.value)
-}
+import { getNewsByQueryAndPage } from '@component/services/news'
+import { getFavorites, setFavorites } from '@component/services/favorites'
+import { News } from '@component/types/news'
+import { selectOptions } from '@component/constants'
+import { debounce } from '@component/utils/intes'
 
 export default function Home() {
+  const [showFavs, setShowFavs] = useState(false)
+  const [favs, setFavs] = useState(getFavorites())
+  const [items, setItems] = useState<Array<News>>([])
+  const [page, setPage] = useState(0)
+  const [lastPage, setLastPage] = useState(false)
+
+  useEffect(() => {
+    getParams()
+  }, [page])
+
+  const getParams = debounce(async () => {
+    if (lastPage) return
+
+    const { hits, pagination } = await getNewsByQueryAndPage(page.toString())
+
+    if (pagination.totalPages === page) setLastPage(true)
+    setItems((prev) => [...prev, ...hits])
+  })
+
+  const handleChange: ChangeEventHandler = async (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
+    localStorage.setItem('query', event.target.value)
+    setPage(0)
+    setItems([])
+    setLastPage(false)
+  }
+
+  const handleFav: MouseEventHandler<Element> = (
+    event: MouseEvent<HTMLInputElement>
+  ) => {
+    event.preventDefault()
+
+    const { id } = event.target as HTMLElement
+    const { newFavs, newItems } = setFavorites(id, favs, items)
+
+    setFavs(newFavs)
+    setItems(newItems)
+  }
+
+  const handleShowAll = () => setShowFavs(false)
+
+  const handleShowFavs = () => setShowFavs(true)
+
+  const getNextPage = () => setPage(page + 1)
+
   return (
     <>
       <Head>
@@ -31,15 +76,30 @@ export default function Home() {
       <Header />
       <main className={styles.main}>
         <div className={styles.buttonWrapper}>
-          <Button label="All" />
-          <Button label="My faves" />
+          <Button label="All" onClick={handleShowAll} selected={!showFavs} />
+          <Button
+            label="My faves"
+            onClick={handleShowFavs}
+            selected={showFavs}
+          />
         </div>
-        <Select
-          options={selectOptions}
-          placeholder="Select your news"
-          handleChange={handleChange}
-        />
-        <Grid items={items} />
+
+        {showFavs ? (
+          <Grid items={favs} handleFav={handleFav} />
+        ) : (
+          <>
+            <Select
+              options={selectOptions}
+              placeholder="Select your news"
+              handleChange={handleChange}
+            />
+            <Grid
+              items={items}
+              handleFav={handleFav}
+              getNextPage={getNextPage}
+            />
+          </>
+        )}
       </main>
     </>
   )

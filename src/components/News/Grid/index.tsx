@@ -1,28 +1,24 @@
-import { MouseEvent, MouseEventHandler } from 'react'
+import { MouseEventHandler } from 'react'
+import { News } from '@component/types/news'
 import NewsCard from '../Card'
 import styles from './Grid.module.css'
 
 type GridProps = {
-  items: Array<object>
+  items: Array<News>
+  handleFav: MouseEventHandler<HTMLImageElement>
+  getNextPage?: () => void
 }
 
-const handleFav: MouseEventHandler<Element> = (
-  event: MouseEvent<HTMLInputElement>
-) => {
-  console.log(event.target)
-}
-
-const Grid: React.FC<GridProps> = ({ items }) => {
+const Grid: React.FC<GridProps> = ({ items, handleFav, getNextPage }) => {
   return (
     <div className={styles.main}>
-      {items.map((it) => (
+      {items.map((it, index) => (
         <NewsCard
-          key={'some'}
-          date="4 hours ago"
-          title="Progressive Web Apps with React.js: Part I — Introduction"
-          fav={true}
+          key={it.id}
           handleFav={handleFav}
-          id="id"
+          data={it}
+          isLast={index === items.length - 1}
+          getNextPage={getNextPage}
         />
       ))}
     </div>

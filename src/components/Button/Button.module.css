@@ -7,8 +7,11 @@
   font-weight: 500;
   height: 1.938rem;
   width: 6.125rem;
+  margin-right: -1px;
 }
 
 .selected {
   border: solid 1px #1797ff;
+  color: #1797ff;
+  z-index: -1;
 }

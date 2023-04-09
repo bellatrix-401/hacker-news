@@ -6,6 +6,10 @@
   height: 5.625rem;
 }
 
+.main:hover {
+  opacity: 0.4;
+}
+
 .info {
   display: flex;
   flex: 1;
