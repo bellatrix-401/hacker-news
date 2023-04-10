@@ -10,6 +10,7 @@ import { getFavorites, setFavorites } from '@component/services/favorites'
 import { News } from '@component/types/news'
 import { SELECT_OPTIONS } from '@component/constants'
 import { debounce } from '@component/utils/intes'
+import Loader from '@component/components/Loader'
 
 export default function Home() {
   const [showFavs, setShowFavs] = useState(false)
@@ -17,6 +18,7 @@ export default function Home() {
   const [items, setItems] = useState<Array<News>>([])
   const [page, setPage] = useState(0)
   const [lastPage, setLastPage] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     getParams()
@@ -25,10 +27,17 @@ export default function Home() {
   const getParams = debounce(async () => {
     if (lastPage) return
 
-    const { hits, pagination } = await getNewsByQueryAndPage(page.toString())
+    try {
+      setIsLoading(true)
+      const { hits, pagination } = await getNewsByQueryAndPage(page.toString())
 
-    if (pagination.totalPages === page) setLastPage(true)
-    setItems((prev) => [...prev, ...hits])
+      if (pagination.totalPages === page) setLastPage(true)
+      setItems((prev) => [...prev, ...hits])
+    } catch (err) {
+      window.alert(err)
+    } finally {
+      setIsLoading(false)
+    }
   })
 
   const handleChange = (value: string) => {
@@ -91,6 +100,12 @@ export default function Home() {
               getNextPage={getNextPage}
             />
           </>
+        )}
+
+        {isLoading && (
+          <div className={styles.loaderWrapper}>
+            <Loader />
+          </div>
         )}
       </main>
     </>

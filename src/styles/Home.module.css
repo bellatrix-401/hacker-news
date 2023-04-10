@@ -2,12 +2,20 @@
   max-width: var(--max-width);
   margin: auto;
   padding: 4.375rem 9.375rem;
+  position: relative;
 }
 
 .buttonWrapper {
   display: flex;
   justify-content: center;
   padding-bottom: 3.938rem;
+}
+
+.loaderWrapper {
+  position: absolute;
+  bottom: 0px;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 @media screen and (max-width: 768px) {
