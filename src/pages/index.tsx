@@ -1,11 +1,4 @@
-import {
-  ChangeEvent,
-  ChangeEventHandler,
-  MouseEvent,
-  MouseEventHandler,
-  useEffect,
-  useState,
-} from 'react'
+import { MouseEvent, MouseEventHandler, useEffect, useState } from 'react'
 import Head from 'next/head'
 import Header from '@component/components/Header'
 import Button from '@component/components/Button'
@@ -15,7 +8,7 @@ import Grid from '@component/components/News/Grid'
 import { getNewsByQueryAndPage } from '@component/services/news'
 import { getFavorites, setFavorites } from '@component/services/favorites'
 import { News } from '@component/types/news'
-import { selectOptions } from '@component/constants'
+import { SELECT_OPTIONS } from '@component/constants'
 import { debounce } from '@component/utils/intes'
 
 export default function Home() {
@@ -38,10 +31,9 @@ export default function Home() {
     setItems((prev) => [...prev, ...hits])
   })
 
-  const handleChange: ChangeEventHandler = async (
-    event: ChangeEvent<HTMLInputElement>
-  ) => {
-    localStorage.setItem('query', event.target.value)
+  const handleChange = (value: string) => {
+    localStorage.setItem('query', value)
+    if (page === 0) getParams()
     setPage(0)
     setItems([])
     setLastPage(false)
@@ -89,7 +81,7 @@ export default function Home() {
         ) : (
           <>
             <Select
-              options={selectOptions}
+              options={SELECT_OPTIONS}
               placeholder="Select your news"
               handleChange={handleChange}
             />

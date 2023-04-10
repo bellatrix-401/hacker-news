@@ -37,7 +37,9 @@ const Card: React.FC<CardProps> = ({
         <div className={styles.info}>
           <div className={styles.date}>
             <Image src="/icons/clock.svg" alt="Date" width={16} height={16} />
-            <span>{data.date}</span>
+            <span>
+              {data.date} by {data.author}
+            </span>
           </div>
           <span className={styles.title}>{data.title}</span>
         </div>

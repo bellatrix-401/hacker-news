@@ -9,3 +9,9 @@
   justify-content: center;
   padding-bottom: 3.938rem;
 }
+
+@media screen and (max-width: 768px) {
+  .main {
+    padding: 3.375rem 1rem;
+  }
+}

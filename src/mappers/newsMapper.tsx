@@ -1,5 +1,5 @@
 import { News, NewsData } from '@component/types/news'
-import { isEmpty } from '@component/utils/intes'
+import { getFormattedDate, isEmpty } from '@component/utils/intes'
 
 export const dataToNews = (data: NewsData) => {
   if (
@@ -22,7 +22,7 @@ export const dataToNews = (data: NewsData) => {
   return {
     id: data.objectID,
     author: data.author,
-    date: data.created_at,
+    date: getFormattedDate(data.created_at),
     title: data.story_title,
     url: data.story_url,
     fav,
